@@ -1,75 +1,39 @@
-<<<<<<< HEAD
-## Servidor Web Java Simple
-Este repositorio contiene un servidor web simple implementado en Java que admite múltiples solicitudes seguidas (no concurrentes). El servidor es capaz de leer archivos del disco local y devolver todos los archivos solicitados, incluyendo páginas HTML, archivos JavaScript, CSS e imágenes. Además, se proporciona una aplicación web de prueba construida con JavaScript, CSS e imágenes para probar el servidor. La aplicación web incluye comunicación asíncrona con servicios REST en el backend.
+# SparkWeb Server
+Este proyecto consiste en la implementación de un servidor web utilizando el microframework SparkWeb, el cual permite construir aplicaciones web de manera sencilla utilizando funciones lambda en Java. Este servidor web es capaz de gestionar servicios GET y POST, servir archivos estáticos, configurar el directorio de los archivos estáticos y cambiar el tipo de respuesta a "application/json".
 
-## Uso del Código
-El archivo Taller2.java contiene la implementación del servidor web. A continuación, se muestran las principales características y funcionalidades del servidor:
+## Arquitectura:
+El servidor web se construye utilizando el API básico de Java sin utilizar frameworks como Spark o Spring. Se utiliza el concepto de programación orientada a objetos para crear un servidor que gestiona las solicitudes HTTP entrantes y las procesa según las rutas definidas por el usuario.
+UTILIZAREMOS COMO BASE EL LABORATORIO ANTERIOR REVISADO Y ENTREGADO (Taller 2)
+## Cómo correr el proyecto:
 
-El servidor escucha en el puerto 35000.
-Puede manejar múltiples solicitudes seguidas de manera no concurrente.
-Lee las solicitudes HTTP entrantes y determina si corresponden a archivos estáticos como HTML, CSS, JavaScript o imágenes.
-Si la solicitud corresponde a un archivo estático, lo lee del disco local y lo devuelve como respuesta HTTP.
-Si la solicitud no corresponde a ningún archivo estático conocido, devuelve una página de índice HTML predeterminada.
-## Ejecución del Servidor
-1. Primero clone el github en la carpeta de su preferencia
-####Github
-`git clone https://github.com/YhonatanGoomez/AREP_2.git`
-2. Abrir el Proyecto con tu IDLE de preferencia y ejecutar los siguientes comandos:
-   
-        mvn package
-		mvn exec:java
-		o
-		mvn exec:java -"Dexec.mainClass"="arep2.taller2.Taller2
-    
-3. El servidor comenzará a escuchar en el puerto 35000. Puede acceder al servidor a través de un navegador web utilizando la dirección http://localhost:35000.
-4. Ya podremos realizar busqueda de los archivos
-![img.png](src/imagenesgit/imagen1.png)
-![img.png](src/imagenesgit/imagen2.png)
+1. Clone el repositorio desde GitHub:
 
+```
+https://github.com/YhonatanGoomez/AREP_3.git
+```
 
-## Estructura del Proyecto
-Taller2.java: Implementación del servidor web Java.
-src/main/resources/public/: Directorio que contiene archivos estáticos como HTML, CSS, JavaScript e imágenes para ser servidos por el servidor.
-index.html: Página principal de la aplicación web de prueba.
-styles.css: Hoja de estilos CSS para la aplicación web.
-script.js: Archivo JavaScript para la lógica de la aplicación web.
-## Notas Adicionales
-Este servidor web fue implementado sin el uso de frameworks web como Spark o Spring. Se utilizaron solo las librerías estándar de Java para el manejo de la red.
-=======
-## Servidor Web Java Simple
-Este repositorio contiene un servidor web simple implementado en Java que admite múltiples solicitudes seguidas (no concurrentes). El servidor es capaz de leer archivos del disco local y devolver todos los archivos solicitados, incluyendo páginas HTML, archivos JavaScript, CSS e imágenes. Además, se proporciona una aplicación web de prueba construida con JavaScript, CSS e imágenes para probar el servidor. La aplicación web incluye comunicación asíncrona con servicios REST en el backend.
+2. Compilar el codigo fuente:
+```
+cd AREP_3
+javac src/main/java/arep2/taller2/*.java
+```
+3. Ejectar el servidor:
 
-## Uso del Código
-El archivo Taller2.java contiene la implementación del servidor web. A continuación, se muestran las principales características y funcionalidades del servidor:
+```
+java -cp src/main/java arep2.taller2.Taller2
+```
+4. Una vez que el servidor esté en funcionamiento, puede enviar solicitudes HTTP al servidor.:
 
-El servidor escucha en el puerto 35000.
-Puede manejar múltiples solicitudes seguidas de manera no concurrente.
-Lee las solicitudes HTTP entrantes y determina si corresponden a archivos estáticos como HTML, CSS, JavaScript o imágenes.
-Si la solicitud corresponde a un archivo estático, lo lee del disco local y lo devuelve como respuesta HTTP.
-Si la solicitud no corresponde a ningún archivo estático conocido, devuelve una página de índice HTML predeterminada.
-## Ejecución del Servidor
-1. Primero clone el github en la carpeta de su preferencia
-####Github
-`git clone https://github.com/YhonatanGoomez/AREP_2.git`
-2. Abrir el Proyecto con tu IDLE de preferencia y ejecutar los siguientes comandos:
-   
-        mvn package
-		mvn exec:java
-		o
-		mvn exec:java -"Dexec.mainClass"="arep2.taller2.Taller2
-    
-3. El servidor comenzará a escuchar en el puerto 35000. Puede acceder al servidor a través de un navegador web utilizando la dirección http://localhost:35000.
-4. Ya podremos realizar busqueda de los archivos
-![img.png](src/imagenesgit/imagen1.png)
-![img.png](src/imagenesgit/imagen2.png)
+```
+localhost:35000
+```
 
 
-## Estructura del Proyecto
-Taller2.java: Implementación del servidor web Java.
-src/main/resources/public/: Directorio que contiene archivos estáticos como HTML, CSS, JavaScript e imágenes para ser servidos por el servidor.
-index.html: Página principal de la aplicación web de prueba.
-styles.css: Hoja de estilos CSS para la aplicación web.
-script.js: Archivo JavaScript para la lógica de la aplicación web.
-## Notas Adicionales
-Este servidor web fue implementado sin el uso de frameworks web como Spark o Spring. Se utilizaron solo las librerías estándar de Java para el manejo de la red.
->>>>>>> ca9f0036a91f442db714e6af9076403afc235cb5
+
+### Construcción:
+- Java
+- Maven
+- Git
+
+### Autor:
+Este servidor web fue creado por Yhonatan Gómez.

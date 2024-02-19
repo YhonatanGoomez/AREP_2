@@ -1,6 +1,9 @@
 package arep2.taller2;
 
 import javax.imageio.ImageIO;
+
+import arep2.taller2.Spark.Spark;
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.ServerSocket;
@@ -12,42 +15,61 @@ import java.nio.file.Path;
 
 public class Taller2 {
 
-    public static void main(String[] args) throws IOException {
+    private static Taller2 instance = new Taller2();
 
-        ServerSocket puerto = null;
-        puerto = new ServerSocket(35000);
-        Socket cliente = null;
-        while (!puerto.isClosed()) {
+    public static Taller2 getInstance() {
+        return instance;
+    }
 
-            System.out.println("Aplicacion funciona");
-            cliente = puerto.accept();
+    public void run(String[] args) throws IOException {
 
-            PrintWriter salida = new PrintWriter(cliente.getOutputStream(), true);
-            BufferedReader entrada = new BufferedReader(
+        ServerSocket serverSocket = null;
+        try {
+            serverSocket = new ServerSocket(35000);
+        } catch (IOException e) {
+            System.err.println("No se puede escuchar el puerto 35000");
+            System.exit(1);
+        }
+        Socket clientSocket = null;
+        while (!serverSocket.isClosed()) {
+            try {
+                System.out.println("Aplicacion funciona");
+                clientSocket = serverSocket.accept();
+            } catch (IOException e) {
+                System.err.println("No funciona la app.");
+                System.exit(1);
+            }
+
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(
                     new InputStreamReader(
-                            cliente.getInputStream()));
-            String esperaEntrada, esperaSalida;
+                            clientSocket.getInputStream()));
+            String inputLine, outputLine;
             boolean firstLine = true;
             String uriString = "";
-            while ((esperaEntrada = entrada.readLine()) != null) {
+            while ((inputLine = in.readLine()) != null) {
+                System.out.println("Recibido: " + inputLine);
                 if (firstLine) {
                     firstLine = false;
-                    uriString = esperaEntrada.split(" ")[1];
+                    uriString = inputLine.split(" ")[1];
+
                 }
-                if (!entrada.ready()) {
+                if (!in.ready()) {
                     break;
                 }
             }
+            System.out.println("URI: " + uriString);
             String responseBody = "";
+
             if (uriString != null && uriString.equals("/")) {
                 responseBody = getIndexResponse();
-                esperaSalida = getResponse(responseBody);
+                outputLine = getResponse(responseBody);
             } else if (uriString != null && !getFile(uriString).equals("Not Found")) {
                 responseBody = getFile(uriString);
-                esperaSalida = getResponse(responseBody);
-            } else if (uriString != null && uriString.split("\\.")[1].equals("jpg")
-                    || uriString.split("\\.")[1].equals("png")) {
-                OutputStream outputStream = cliente.getOutputStream();
+                outputLine = getResponse(responseBody);
+            } else if (uriString != null && uriString.split("\\.")[1].equals("jpg") ||
+                    uriString.split("\\.")[1].equals("png")) {
+                OutputStream outputStream = clientSocket.getOutputStream();
                 File file = new File("src/main/resources/public/" + uriString);
                 try {
                     BufferedImage bufferedImage = ImageIO.read(file);
@@ -55,36 +77,25 @@ public class Taller2 {
                     DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
                     ImageIO.write(bufferedImage, uriString.split("\\.")[1], byteArrayOutputStream);
-                    esperaSalida = getImageResponseHeader("");
-                    dataOutputStream.writeBytes(esperaSalida);
+                    outputLine = getImageResponseHeader("");
+                    dataOutputStream.writeBytes(outputLine);
                     dataOutputStream.write(byteArrayOutputStream.toByteArray());
+                    System.out.println(outputLine);
                 } catch (IOException e) {
                     e.printStackTrace();
                     responseBody = getFile(uriString);
-                    esperaSalida = getResponse(responseBody);
+                    outputLine = getResponse(responseBody);
                 }
+
             } else {
-                esperaSalida = getIndexResponse();
+                outputLine = getIndexResponse();
             }
-            salida.println(esperaSalida);
-            salida.close();
-            entrada.close();
+            out.println(outputLine);
+            out.close();
+            in.close();
         }
-        cliente.close();
-        puerto.close();
-    }
-
-    /**
-     * Método para obtener la respuesta del encabezado
-     *
-     * @param responseBody String de la respuesta dada por el Body
-     * @return El encabezado del Body
-     */
-    private static String getImageResponseHeader(String responseBody) {
-        return "HTTP/1.1 200 OK \r\n"
-                + "Content-Type: image/jpg \r\n"
-                + "\r\n";
-
+        clientSocket.close();
+        serverSocket.close();
     }
 
     /**
@@ -107,29 +118,16 @@ public class Taller2 {
         return web;
     }
 
-    /**
-     * Método para obtener la respuesta de una solicitud
-     *
-     * @param responseBody String de los datos que trae el Body
-     * @return los datos del Body mas un pequeno encabezado
-     */
-    private static String getResponse(String responseBody) {
-        return "HTTP/1.1 200 OK\r\n"
-                + "Content-Type: text/html\r\n"
-                + "\r\n"
-                + responseBody;
-    }
-
     private static String getIndexResponse() {
         return "<!DOCTYPE html>\n"
                 + "<html>\n"
                 + "    <head>\n"
-                + "        <title>Taller 2 AREP</title>\n"
+                + "        <title>Taller 3 AREP</title>\n"
                 + "        <meta charset=\"UTF-8\">\n"
                 + "        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
                 + "    </head>\n"
                 + "    <body>\n"
-                + "        <h1>AREP Taller 2</h1>\n"
+                + "        <h1>AREP Taller 3</h1>\n"
                 + "        <form id=\"redirectForm\">\n"
                 + "            <input type=\"text\" id=\"urlInput\" placeholder=\"Nombre y extension del archivo\">\n"
                 + "            <button type=\"button\" onclick=\"redirectToURL()\">Ir</button>\n"
@@ -143,5 +141,38 @@ public class Taller2 {
                 + "    </body>\n"
                 + "</html>";
     }
+    /**
+     * Método para obtener la respuesta de una solicitud
+     *
+     * @param responseBody String de los datos que trae el Body
+     * @return los datos del Body mas un pequeno encabezado
+     */
+    private static String getResponse(String responseBody) {
+        return "HTTP/1.1 200 OK\r\n" +
+                "Content-Type: text/html\r\n" +
+                "\r\n" +
+                responseBody;
+    }
+    /**
+     * Método para obtener la respuesta del encabezado
+     *
+     * @param responseBody String de la respuesta dada por el Body
+     * @return El encabezado del Body
+     */
+    private static String getImageResponseHeader(String responseBody) {
+        System.out.println("response Body" + responseBody);
+        return "HTTP/1.1 200 OK \r\n"
+                + "Content-Type: image/jpg \r\n"
+                + "\r\n";
 
+    }
+
+    public static void main(String[] args) throws IOException {
+        Taller2 server = Taller2.getInstance();
+        Spark.get("",(req,ans)->{
+            ans.setType("application/json");
+            return ans.getResponse();
+        });
+        server.run(args);
+    }
 }
